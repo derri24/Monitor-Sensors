@@ -20,7 +20,7 @@ public class SensorController: Controller
     public async Task<IActionResult> Index()
     {
         var response = await _sensorService.GetIndexModel();
-        if(response != null)
+        if(response == null)
             return RedirectToAction("Error");
         return View(response);
     }

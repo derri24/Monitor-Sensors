@@ -91,6 +91,7 @@ public class SensorService : ISensorService
                         From = sensor.RangeFrom,
                         To = sensor.RangeTo
                     },
+                    Unit = sensor.Unit.Name
                 };
                 contactsModel.Add(contactModel);
             }

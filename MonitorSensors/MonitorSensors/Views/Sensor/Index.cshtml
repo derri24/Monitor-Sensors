@@ -31,6 +31,7 @@
         <th scope="col">MODEL</th>
         <th scope="col">TYPE</th>
         <th scope="col">RANGE</th>
+        <th scope="col">UNIT</th>
         <th scope="col">LOCATION</th>
         <th scope="col">ACTION</th>
     </tr>
@@ -61,10 +62,10 @@
                     <b>Range</b>
                     <div class="row">
                         <div class="col-6">
-                            <input class="form-control mb-3" placeholder="From" id="createRangeFrom">
+                            <input type="number" class="form-control mb-3" placeholder="From" id="createRangeFrom">
                         </div>
                         <div class="col-6">
-                            <input class="form-control col-6 mb-3" placeholder="To" id="createRangeTo">
+                            <input type="number" class="form-control col-6 mb-3" placeholder="To" id="createRangeTo">
                         </div>
                     </div>
                 </div>
@@ -130,10 +131,10 @@
                     <b>Range</b>
                     <div class="row">
                         <div class="col-6">
-                            <input class="form-control mb-3" placeholder="From" id="updateRangeFrom">
+                            <input type="number" class="form-control mb-3" placeholder="From" id="updateRangeFrom">
                         </div>
                         <div class="col-6">
-                            <input class="form-control col-6 mb-3" placeholder="To" id="updateRangeTo">
+                            <input type="number" class="form-control col-6 mb-3" placeholder="To" id="updateRangeTo">
                         </div>
                     </div>
                 </div>
@@ -196,6 +197,31 @@
         document.getElementById('createDescription').value = '';
     }
     
+    function validateData(title, model, rangeFrom, rangeTo, location, description){
+        if (title.length === 0) {
+            return "Title can't be empty!";
+        }
+        if (title.length > 30) {
+            return "Title can't be longer than 30 characters!";
+        }
+        if (model.length === 0) {
+            return "Model can't be empty!";
+        }
+        if (model.length > 15) {
+            return "Model can't be longer than 15 characters!";
+        }
+        if (rangeFrom >= rangeTo) {
+            return "Range to must be bigger than Range from!";
+        } 
+        if (location.length > 40) {
+            return "Location can't be longer than 40 characters!";
+        } 
+        if (description.length > 200) {
+            return "Description can't be longer than 200 characters!";
+        }
+        return "";
+    }
+    
     async function createSensor(){
         let sensor =
             {
@@ -211,6 +237,12 @@
                 description: document.getElementById('createDescription').value,
              
             }
+            
+        let message = validateData(sensor.title, sensor.model, sensor.range.from, sensor.range.to, sensor.location, sensor.description);
+        if (message !== ""){
+            alert(message); 
+            return;
+        }
         
         const config = {
             method: 'post',
@@ -266,7 +298,12 @@
                 location: document.getElementById('updateLocation').value,
                 description: document.getElementById('updateDescription').value,
            }
-       
+           
+        let message = validateData(sensor.title, sensor.model, sensor.range.from, sensor.range.to, sensor.location, sensor.description);
+        if (message !== ""){
+            alert(message); 
+            return;
+        }
         
         const config = {
             method: 'post',
@@ -324,6 +361,7 @@
         let td5 = document.createElement("td")
         let td6 = document.createElement("td");
         let td7 = document.createElement("td");
+        let td8 = document.createElement("td");
 
         let aDelete = document.createElement("a");
         aDelete.innerText = "delete";
@@ -343,16 +381,17 @@
         }
 
         let br = document.createElement("br");
-        td7.appendChild(aUpdate);
-        td7.appendChild(br);
-        td7.appendChild(aDelete);
+        td8.appendChild(aUpdate);
+        td8.appendChild(br);
+        td8.appendChild(aDelete);
 
         td1.innerText = obj.ind;
         td2.innerText = obj.title;
         td3.innerText = obj.model;
         td4.innerText = obj.type;
         td5.innerText = `${obj.range.from} - ${obj.range.to}`;
-        td6.innerText = obj.location;
+        td6.innerText = obj.unit;
+        td7.innerText = obj.location;
      
         row.appendChild(td1);
         row.appendChild(td2);
@@ -361,6 +400,7 @@
         row.appendChild(td5);
         row.appendChild(td6);
         row.appendChild(td7);
+        row.appendChild(td8);
 
         table.appendChild(row)
     }
