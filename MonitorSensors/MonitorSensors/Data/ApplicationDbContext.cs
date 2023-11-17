@@ -8,7 +8,7 @@ public sealed class ApplicationDbContext : DbContext
 {
     public DbSet<Sensor> Sensors { get; set; }
     public DbSet<Type> Types { get; set; }
-    public DbSet<Uint> Uints { get; set; }
+    public DbSet<Unit> Units { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -20,7 +20,7 @@ public sealed class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Sensor>().ToTable("Sensor");
         modelBuilder.Entity<Type>().ToTable("Type");
-        modelBuilder.Entity<Uint>().ToTable("Uint");
+        modelBuilder.Entity<Unit>().ToTable("Unit");
 
 
         modelBuilder.Entity<Type>().HasData(
@@ -30,11 +30,11 @@ public sealed class ApplicationDbContext : DbContext
             new Type { Id = 4, Name = "Humidity", }
         );
 
-        modelBuilder.Entity<Uint>().HasData(
-            new Uint { Id = 1, Name = "bar" },
-            new Uint { Id = 2, Name = "voltage" },
-            new Uint { Id = 3, Name = "\u00b0C", },
-            new Uint { Id = 4, Name = "%", }
+        modelBuilder.Entity<Unit>().HasData(
+            new Unit { Id = 1, Name = "bar" },
+            new Unit { Id = 2, Name = "voltage" },
+            new Unit { Id = 3, Name = "\u00b0C", },
+            new Unit { Id = 4, Name = "%", }
         );
     }
 }

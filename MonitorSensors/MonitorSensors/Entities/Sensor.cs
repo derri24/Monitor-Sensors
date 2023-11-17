@@ -19,7 +19,7 @@ public class Sensor
     public int TypeId { get; set; }
     public virtual Type Type { get; set; }
     
-    public int UintId { get; set; }
-    public Uint Unit { get; set; }
+    public int UnitId { get; set; }
+    public Unit Unit { get; set; }
   
 }

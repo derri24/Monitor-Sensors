@@ -1,0 +1,367 @@
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model GetIndexModel
+@{
+    ViewData["Title"] = "Sensors";
+}
+
+<div class="container-md">
+    <div class="d-flex justify-content-between mb-4 mt-5">
+        <div>
+            <h1>MONITOR SENSORS</h1>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control w-25" placeholder="Filter.." aria-label="Recipient's username" id="filterValue">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-info" type="button" onclick="filterSensors()">🔍︎</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a class="btn btn-info text-white mt-1" onclick="createOpen()">
+                Create
+            </a>
+        </div>
+    </div>
+</div>
+
+<table class="table" id="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">TITLE</th>
+        <th scope="col">MODEL</th>
+        <th scope="col">TYPE</th>
+        <th scope="col">RANGE</th>
+        <th scope="col">LOCATION</th>
+        <th scope="col">ACTION</th>
+    </tr>
+    </thead>
+    <tbody id="body-table">
+
+    </tbody>
+</table>
+
+@*Create*@
+<div class="modal fade" tabindex="-1" id="dialogCreate">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create sensor</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <b>Title</b>
+                    <input class="form-control mb-3" placeholder="Enter title..." id="createTitle">
+                </div>
+                <div class="form-group">
+                    <b>Model</b>
+                    <input class="form-control mb-3" placeholder="Enter model..." id="createModel">
+                </div>
+                <div class="form-group">
+                    <b>Range</b>
+                    <div class="row">
+                        <div class="col-6">
+                            <input class="form-control mb-3" placeholder="From" id="createRangeFrom">
+                        </div>
+                        <div class="col-6">
+                            <input class="form-control col-6 mb-3" placeholder="To" id="createRangeTo">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <b>Type</b>
+                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="createType">
+                                @foreach (var item in @Model.Types)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <b>Unit</b>
+                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="createUnit">
+                                @foreach (var item in @Model.Units)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <b>Location</b>
+                    <input class="form-control mb-3" placeholder="Enter location..." id="createLocation">
+                </div>
+                <div class="form-group">
+                    <b>Description</b>
+                    <textarea class="form-control mb-3" rows="2" placeholder="Enter description..." id="createDescription" style="resize: none"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info text-white" onclick="createSensor()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Update*@
+<div class="modal fade" tabindex="-1" id="dialogUpdate">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update sensor</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <b>Title</b>
+                    <input class="form-control mb-3" placeholder="Enter title..." id="updateTitle">
+                </div>
+                <div class="form-group">
+                    <b>Model</b>
+                    <input class="form-control mb-3" placeholder="Enter model..." id="updateModel">
+                </div>
+                <div class="form-group">
+                    <b>Range</b>
+                    <div class="row">
+                        <div class="col-6">
+                            <input class="form-control mb-3" placeholder="From" id="updateRangeFrom">
+                        </div>
+                        <div class="col-6">
+                            <input class="form-control col-6 mb-3" placeholder="To" id="updateRangeTo">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <b>Type</b>
+                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="updateType">
+                                @foreach (var item in @Model.Types)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <b>Unit</b>
+                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="updateUnit">
+                                @foreach (var item in @Model.Units)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <b>Location</b>
+                    <input class="form-control mb-3" placeholder="Enter location..." id="updateLocation">
+                </div>
+                <div class="form-group">
+                    <b>Description</b>
+                    <textarea class="form-control mb-3" rows="2" placeholder="Enter description..." id="updateDescription" style="resize: none"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info text-white" onclick="updateSensor()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+        filterSensors();
+    });
+    
+    const createModal = new bootstrap.Modal(document.getElementById("dialogCreate"));
+    const updateModel = new bootstrap.Modal(document.getElementById("dialogUpdate"));
+    
+    function createOpen(){
+        createModal.show();
+        
+        document.getElementById('createTitle').value = '';
+        document.getElementById('createModel').value = '';
+        document.getElementById('createRangeFrom').value = '';
+        document.getElementById('createRangeTo').value = '';
+        document.getElementById('createLocation').value = '';
+        document.getElementById('createDescription').value = '';
+    }
+    
+    async function createSensor(){
+        let sensor =
+            {
+                title: document.getElementById('createTitle').value,
+                model: document.getElementById('createModel').value,
+                range: {
+                    from: document.getElementById('createRangeFrom').value,
+                    to:document.getElementById('createRangeTo').value,
+                },
+                typeId: document.getElementById('createType').value,
+                unitId: document.getElementById('createUnit').value,
+                location: document.getElementById('createLocation').value,
+                description: document.getElementById('createDescription').value,
+             
+            }
+        
+        const config = {
+            method: 'post',
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
+            body: JSON.stringify(sensor)
+        }
+        const response = await fetch(`/Sensor/Create`, config)  
+        createModal.hide()
+        await filterSensors();
+    }
+    
+    let idForUpdate;
+    async function updateOpen(id){
+        updateModel.show();
+        
+        idForUpdate = id;
+        
+        const config = {
+            method: 'get',
+            headers: {
+                "Content-type": "application/octet-stream; charset=UTF-8",
+            },
+        }
+        const response = await fetch(`/Sensor/GetSensorById?id=${id}`, config);
+        let object = await response.json();
+        let item = object.item;
+
+        document.getElementById('updateTitle').value = item.title;
+        document.getElementById('updateModel').value = item.model;
+        document.getElementById('updateRangeFrom').value = item.range.from;
+        document.getElementById('updateRangeTo').value = item.range.to;
+        document.getElementById('updateType').value = item.typeId;
+        document.getElementById('updateUnit').value = item.unitId;
+        document.getElementById('updateLocation').value = item.location;
+        document.getElementById('updateDescription').value = item.description;
+     
+    }
+        
+    async function updateSensor(){
+        let sensor =
+            {
+                id: idForUpdate,
+                title: document.getElementById('updateTitle').value,
+                model: document.getElementById('updateModel').value,
+                range: {
+                    from: document.getElementById('updateRangeFrom').value,
+                    to:document.getElementById('updateRangeTo').value,
+                },
+                typeId: document.getElementById('updateType').value,
+                unitId: document.getElementById('updateUnit').value,
+                location: document.getElementById('updateLocation').value,
+                description: document.getElementById('updateDescription').value,
+           }
+       
+        
+        const config = {
+            method: 'post',
+            headers: {
+               "Content-type": "application/json; charset=UTF-8",
+            },
+            body: JSON.stringify(sensor)
+        }
+       
+        const response = await fetch(`/Sensor/Update?`, config)
+ 
+        updateModel.hide();
+        await filterSensors();
+    }  
+    
+    async function deleteSensor(id){
+        const config = {
+            method: 'delete',
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
+        }
+        const response = await fetch(`/Sensor/Delete?id=${id}`, config);
+        await filterSensors();
+    }
+    
+    async function filterSensors() {
+        let filter = document.getElementById('filterValue').value;
+        const config = {
+            method: 'get',
+            headers: {
+                "Content-type": "application/octet-stream; charset=UTF-8",
+            },
+        }
+        const response = await fetch(`/Sensor/Filter?value=${filter}`, config)
+       
+        let object = await response.json();
+        let items = object.items;
+
+        let table = document.getElementById("body-table");
+        table.innerHTML = "";
+        for (let i = 0; i < items.length; i++) {
+            items[i].ind = i + 1;
+            addRow(table, items[i]);
+        }
+    }
+    
+    function addRow(table, obj) {
+        let row = document.createElement("tr")
+
+        let td1 = document.createElement("td")
+        let td2 = document.createElement("td")
+        let td3 = document.createElement("td")
+        let td4 = document.createElement("td")
+        let td5 = document.createElement("td")
+        let td6 = document.createElement("td");
+        let td7 = document.createElement("td");
+
+        let aDelete = document.createElement("a");
+        aDelete.innerText = "delete";
+        aDelete.href = "#"
+        aDelete.onclick = function (event) {
+            deleteSensor(obj.id);
+        }
+ 
+        aDelete.style.color = "#DC143C";
+
+        let aUpdate = document.createElement("a");
+        aUpdate.innerText = "update";
+        aUpdate.href = "#"
+        
+        aUpdate.onclick = function (event) {
+            updateOpen(obj.id);
+        }
+
+        let br = document.createElement("br");
+        td7.appendChild(aUpdate);
+        td7.appendChild(br);
+        td7.appendChild(aDelete);
+
+        td1.innerText = obj.ind;
+        td2.innerText = obj.title;
+        td3.innerText = obj.model;
+        td4.innerText = obj.type;
+        td5.innerText = `${obj.range.from} - ${obj.range.to}`;
+        td6.innerText = obj.location;
+     
+        row.appendChild(td1);
+        row.appendChild(td2);
+        row.appendChild(td3);
+        row.appendChild(td4);
+        row.appendChild(td5);
+        row.appendChild(td6);
+        row.appendChild(td7);
+
+        table.appendChild(row)
+    }
+</script>

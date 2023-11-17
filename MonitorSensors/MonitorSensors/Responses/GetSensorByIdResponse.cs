@@ -1,8 +1,10 @@
+using MonitorSensors.Models;
+
 namespace MonitorSensors.Responses;
 
 public class GetSensorByIdResponse
 {
-    public SensorModel Item { get; set; }
+    public GetByIdSensorModel Item { get; set; }
     public GetSensorByIdResult Result { get; set; }
 }
 

@@ -17,7 +17,16 @@ public class SensorController: Controller
 
     [Route("/")]
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
+    {
+        var response = await _sensorService.GetIndexModel();
+        if(response != null)
+            return RedirectToAction("Error");
+        return View(response);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> Error()
     {
         return View();
     }
@@ -29,9 +38,9 @@ public class SensorController: Controller
     }
     
     [HttpGet]
-    public async Task<GetSensorByIdResponse> GetContactById([FromQuery]int id)
+    public async Task<GetSensorByIdResponse> GetSensorById([FromQuery]int id)
     {
-        return await _sensorService.GetContactById(id);
+        return await _sensorService.GetSensorById(id);
     }
 
     [HttpPost]

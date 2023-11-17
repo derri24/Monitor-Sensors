@@ -16,6 +16,48 @@ public class SensorService : ISensorService
         _context = context;
     }
 
+    public async Task<GetIndexModel?> GetIndexModel()
+    {
+        var indexModel = new GetIndexModel();
+
+        try
+        {
+            var types = await _context.Types.ToListAsync();
+            var units = await _context.Units.ToListAsync();
+
+            var typesModel = new List<TypeModel>();
+            foreach (var type in types)
+            {
+                var typeModel = new TypeModel()
+                {
+                    Id = type.Id,
+                    Name = type.Name,
+                };
+                typesModel.Add(typeModel);
+            }
+
+            var unitsModel = new List<UnitModel>();
+            foreach (var unit in units)
+            {
+                var unitModel = new UnitModel()
+                {
+                    Id = unit.Id,
+                    Name = unit.Name,
+                };
+                unitsModel.Add(unitModel);
+            }
+
+            indexModel.Types = typesModel;
+            indexModel.Units = unitsModel;
+
+            return indexModel;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
     public async Task<FilterSensorResponse> Filter(string value)
     {
         value ??= "";
@@ -24,6 +66,8 @@ public class SensorService : ISensorService
         try
         {
             var sensors = await _context.Sensors
+                .Include(x=> x.Type)
+                .Include(x=> x.Unit)
                 .Where(x => x.Title.Contains(value)
                             || x.Model.Contains(value)
                             || x.Description.Contains(value)
@@ -32,18 +76,16 @@ public class SensorService : ISensorService
                             || x.Unit.Name.Contains(value))
                 .OrderBy(x => x.Title).ToListAsync();
 
-            var contactsModel = new List<SensorModel>();
+            var contactsModel = new List<FilterSensorModel>();
             foreach (var sensor in sensors)
             {
-                var contactModel = new SensorModel()
+                var contactModel = new FilterSensorModel()
                 {
                     Id = sensor.Id,
                     Title = sensor.Title,
                     Model = sensor.Model,
-                    Description = sensor.Description,
                     Location = sensor.Location,
-                    TypeId = sensor.TypeId,
-                    UnitId = sensor.UintId,
+                    Type = sensor.Type.Name,
                     Range = new RangeModel()
                     {
                         From = sensor.RangeFrom,
@@ -64,7 +106,7 @@ public class SensorService : ISensorService
         }
     }
 
-    public async Task<GetSensorByIdResponse> GetContactById(int id)
+    public async Task<GetSensorByIdResponse> GetSensorById(int id)
     {
         var response = new GetSensorByIdResponse();
         try
@@ -76,7 +118,7 @@ public class SensorService : ISensorService
                 return response;
             }
 
-            var sensorModel = new SensorModel()
+            var sensorModel = new GetByIdSensorModel()
             {
                 Id = sensor.Id,
                 Title = sensor.Title,
@@ -84,7 +126,7 @@ public class SensorService : ISensorService
                 Description = sensor.Description,
                 Location = sensor.Location,
                 TypeId = sensor.TypeId,
-                UnitId = sensor.UintId,
+                UnitId = sensor.UnitId,
                 Range = new RangeModel()
                 {
                     From = sensor.RangeFrom,
@@ -119,7 +161,7 @@ public class SensorService : ISensorService
             Description = model.Description,
             Location = model.Location,
             TypeId = model.TypeId,
-            UintId = model.UnitId,
+            UnitId = model.UnitId,
             RangeFrom = model.Range.From,
             RangeTo = model.Range.To
         };
@@ -156,7 +198,7 @@ public class SensorService : ISensorService
             Description = model.Description,
             Location = model.Location,
             TypeId = model.TypeId,
-            UintId = model.UnitId,
+            UnitId = model.UnitId,
             RangeFrom = model.Range.From,
             RangeTo = model.Range.To
         };
