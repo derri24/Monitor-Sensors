@@ -17,30 +17,28 @@ namespace MonitorSensors.Services;
 
 public class AccountService : IAccountService
 {
-    private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> userManager;
     private readonly RoleManager<IdentityRole> roleManager;
     private readonly IConfiguration _configuration;
 
-    public AccountService(ApplicationDbContext context,
+    public AccountService(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration)
     {
-        _context = context;
         _configuration = configuration;
         this.userManager = userManager;
         this.roleManager = roleManager;
     }
 
-    public async Task<SignUpResponse> Registration(SingUpDataModel model)
+    public async Task<RegistrationResponse> Registration(RegistrationDataModel model)
     {
-        var response = new SignUpResponse();
+        var response = new RegistrationResponse();
 
         var userExists = await userManager.FindByNameAsync(model.Name);
         if (userExists != null)
         {
-            response.Result = SingUpResult.UserAlreadyExist;
+            response.Result = RegistrationResult.UserAlreadyExists;
             return response;
         }
 
@@ -49,14 +47,12 @@ public class AccountService : IAccountService
             SecurityStamp = Guid.NewGuid().ToString(),
             Name = model.Name,
             UserName = model.Login,
-           
-            //UserName = model.Name
         };
         user.Id = Guid.NewGuid().ToString();
         var createUserResult = await userManager.CreateAsync(user, model.Password);
         if (!createUserResult.Succeeded)
         {
-            response.Result = SingUpResult.ClientError;
+            response.Result = RegistrationResult.ClientError;
             return response;
         }
 
@@ -66,17 +62,17 @@ public class AccountService : IAccountService
         if (await roleManager.RoleExistsAsync(model.Role))
             await userManager.AddToRoleAsync(user, model.Role);
 
-        response.Result = SingUpResult.Success;
+        response.Result = RegistrationResult.Success;
         return response;
     }
     
-    public async Task<LogInResponse> Authorization(LogInDataModel model)
+    public async Task<AuthenticationResponse> Authentication(AuthenticationDataModel model)
     {
-        var response = new LogInResponse();
+        var response = new AuthenticationResponse();
         var user = await userManager.FindByNameAsync(model.Login);
         if (user == null || !await userManager.CheckPasswordAsync(user, model.Password))
         {
-            response.Result = LoginResult.IncorrectLoginOrPassword;
+            response.Result = AuthenticationResult.IncorrectLoginOrPassword;
             return response;
         }
 
@@ -95,7 +91,7 @@ public class AccountService : IAccountService
         string token = GenerateToken(authClaims);
         response.Token = token;
     
-        response.Result = LoginResult.Success;
+        response.Result = AuthenticationResult.Success;
         return response;
     }
     

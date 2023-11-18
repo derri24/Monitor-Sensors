@@ -2,14 +2,13 @@ using System.Security.Claims;
 
 namespace MonitorSensors.Responses.Account;
 
-public class LogInResponse
+public class AuthenticationResponse
 {
-    //public ClaimsIdentity Claims { get; set; }
     public string? Token { get; set; }
-    public LoginResult Result { get; set; }
+    public AuthenticationResult Result { get; set; }
 }
 
-public enum LoginResult
+public enum AuthenticationResult
 {
     IncorrectLoginOrPassword,
     ServerError,

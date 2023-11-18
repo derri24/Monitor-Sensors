@@ -222,6 +222,12 @@
         if (model.length > 15) {
             return "Model can't be longer than 15 characters!";
         }
+        if (isNaN(rangeFrom)) {
+            return "Range from can't be empty!";
+        }   
+        if (isNaN(rangeTo)) {
+            return "Range to can't be empty!";
+        } 
         if (rangeFrom >= rangeTo) {
             return "Range to must be bigger than Range from!";
         } 
@@ -240,8 +246,8 @@
                 title: document.getElementById('createTitle').value,
                 model: document.getElementById('createModel').value,
                 range: {
-                    from: document.getElementById('createRangeFrom').value,
-                    to:document.getElementById('createRangeTo').value,
+                    from: parseInt(document.getElementById('createRangeFrom').value),
+                    to: parseInt(document.getElementById('createRangeTo').value),
                 },
                 typeId: document.getElementById('createType').value,
                 unitId: document.getElementById('createUnit').value,
@@ -302,8 +308,8 @@
                 title: document.getElementById('updateTitle').value,
                 model: document.getElementById('updateModel').value,
                 range: {
-                    from: document.getElementById('updateRangeFrom').value,
-                    to:document.getElementById('updateRangeTo').value,
+                    from:  parseInt(document.getElementById('updateRangeFrom').value),
+                    to:  parseInt(document.getElementById('updateRangeTo').value),
                 },
                 typeId: document.getElementById('updateType').value,
                 unitId: document.getElementById('updateUnit').value,

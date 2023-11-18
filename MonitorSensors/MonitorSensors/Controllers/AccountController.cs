@@ -1,13 +1,7 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MonitorSensors.Models.Account;
 using MonitorSensors.Responses.Account;
 using MonitorSensors.Services.Interfaces;
-using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
 
 namespace MonitorSensors.Controllers;
 
@@ -28,22 +22,24 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Authorization()
+    public async Task<IActionResult> Authentication()
     {
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Authorization([FromBody] LogInDataModel model)
+    public async Task<AuthenticationResponse> Authentication([FromBody] AuthenticationDataModel model)
     {
-        var response = await _accountService.Authorization(model);
+        var response = await _accountService.Authentication(model);
         if (response.Token != null)
+        {
             HttpContext.Response.Cookies.Append("token", response.Token);
-        return Ok();
+        }
+        return response;
     }
 
     [HttpPost]
-    public async Task<SignUpResponse> Registration([FromBody] SingUpDataModel model)
+    public async Task<RegistrationResponse> Registration([FromBody] RegistrationDataModel model)
     {
         return await _accountService.Registration(model);
     }

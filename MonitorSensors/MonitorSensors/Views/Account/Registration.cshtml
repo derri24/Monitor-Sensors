@@ -34,7 +34,7 @@
                 </div>
 
 
-                <p1 class=" mb-3">Have an account? <a class="text-info" href="/Account/Authorization">Log in</a></p1>
+                <p1 class=" mb-3">Have an account? <a class="text-info" href="/Account/Authentication">Log in</a></p1>
                 <button type="button" class="btn btn-dark w-100" onclick="registration()">Registration</button>
             </div>
         </div>
@@ -87,8 +87,11 @@
            
         const response = await fetch(`/Account/Registration?`, config)
         let object = await response.json();
-        console.log(object)
+        if (object.result === 0)
+            alert("User already exists!")
+        if (object.result === 1)
+            alert("Client Error!")
         if (object.result === 3)
-            window.location.href = '/Account/Authorization';
+            window.location.href = '/Account/Authentication';
     }
 </script>

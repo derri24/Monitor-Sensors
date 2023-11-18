@@ -1,6 +1,4 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -61,14 +59,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseMiddleware<VerifyTokenMiddleware>();
-
-// app.UseAuthentication();
-// app.UseAuthorization();
 app.UseAuthorization();
 app.MapControllers();
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller=Sensor}/{action=Index}/{id?}");
-
 
 app.Run();

@@ -5,7 +5,7 @@ namespace MonitorSensors.Services.Interfaces;
 
 public interface IAccountService
 {
-    public Task<SignUpResponse> Registration(SingUpDataModel model);
-    public Task<LogInResponse> Authorization(LogInDataModel model);
+    public Task<RegistrationResponse> Registration(RegistrationDataModel model);
+    public Task<AuthenticationResponse> Authentication(AuthenticationDataModel model);
 
 }

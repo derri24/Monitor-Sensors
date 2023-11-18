@@ -16,8 +16,7 @@ public class VerifyTokenMiddleware
 
     public async Task InvokeAsync(HttpContext context, TokenValidationParameters tokenValidationParameters)
     {
-        var a = (context.Request.Path);
-        if (context.Request.Path == "/Account/Authorization" || 
+        if (context.Request.Path == "/Account/Authentication" || 
             context.Request.Path == "/Account/Registration" )
         {
             await this._next(context);
@@ -27,7 +26,7 @@ public class VerifyTokenMiddleware
         if (!context.Request.Cookies.ContainsKey("token"))
         {
             context.Response.StatusCode = 401;
-            context.Response.Redirect("/Account/Authorization");
+            context.Response.Redirect("/Account/Authentication");
             return;
         }
 
@@ -43,10 +42,9 @@ public class VerifyTokenMiddleware
         catch(Exception ex)
         {
             context.Response.StatusCode = 401;
-            context.Response.Redirect("/Account/Authorization");
+            context.Response.Redirect("/Account/Authentication");
             return;
         }
-       
      
         await this._next(context);
     }
