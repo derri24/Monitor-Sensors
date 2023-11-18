@@ -5,6 +5,9 @@
 }
 
 <div class="container-md">
+    <div class=" justify-content-end mt-3">
+         <a class="text-info" href="#" onclick="LogOut()">Log Out︎</a>
+    </div>
     <div class="d-flex justify-content-between mb-4 mt-5">
         <div>
             <h1>MONITOR SENSORS</h1>
@@ -15,11 +18,15 @@
                 </div>
             </div>
         </div>
-        <div>
-            <a class="btn btn-info text-white mt-1" onclick="createOpen()">
-                Create
-            </a>
-        </div>
+        @if (Context.User.IsInRole("Admin"))
+        {
+            <div>
+                <a class="btn btn-info text-white mt-1" onclick="createOpen()">
+                    Create
+                </a>
+            </div>
+        }
+
     </div>
 </div>
 
@@ -33,7 +40,10 @@
         <th scope="col">RANGE</th>
         <th scope="col">UNIT</th>
         <th scope="col">LOCATION</th>
-        <th scope="col">ACTION</th>
+        @if (Context.User.IsInRole("Admin"))
+        {
+            <th scope="col">ACTION</th>
+        }
     </tr>
     </thead>
     <tbody id="body-table">
@@ -41,142 +51,144 @@
     </tbody>
 </table>
 
+@if (Context.User.IsInRole("Admin"))
+{
 @*Create*@
-<div class="modal fade" tabindex="-1" id="dialogCreate">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Create sensor</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <b>Title</b>
-                    <input class="form-control mb-3" placeholder="Enter title..." id="createTitle">
+    <div class="modal fade" tabindex="-1" id="dialogCreate">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create sensor</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="form-group">
-                    <b>Model</b>
-                    <input class="form-control mb-3" placeholder="Enter model..." id="createModel">
-                </div>
-                <div class="form-group">
-                    <b>Range</b>
-                    <div class="row">
-                        <div class="col-6">
-                            <input type="number" class="form-control mb-3" placeholder="From" id="createRangeFrom">
-                        </div>
-                        <div class="col-6">
-                            <input type="number" class="form-control col-6 mb-3" placeholder="To" id="createRangeTo">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <b>Title</b>
+                        <input class="form-control mb-3" placeholder="Enter title..." id="createTitle">
+                    </div>
+                    <div class="form-group">
+                        <b>Model</b>
+                        <input class="form-control mb-3" placeholder="Enter model..." id="createModel">
+                    </div>
+                    <div class="form-group">
+                        <b>Range</b>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="number" class="form-control mb-3" placeholder="From" id="createRangeFrom">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control col-6 mb-3" placeholder="To" id="createRangeTo">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-6">
-                            <b>Type</b>
-                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="createType">
-                                @foreach (var item in @Model.Types)
-                                {
-                                    <option value="@item.Id">@item.Name</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <b>Unit</b>
-                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="createUnit">
-                                @foreach (var item in @Model.Units)
-                                {
-                                    <option value="@item.Id">@item.Name</option>
-                                }
-                            </select>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-6">
+                                <b>Type</b>
+                                <select class="form-control form-select mb-3" placeholder="Choose type..." id="createType">
+                                    @foreach (var item in @Model.Types)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <b>Unit</b>
+                                <select class="form-control form-select mb-3" placeholder="Choose type..." id="createUnit">
+                                    @foreach (var item in @Model.Units)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+
                         </div>
 
                     </div>
-
+                    <div class="form-group">
+                        <b>Location</b>
+                        <input class="form-control mb-3" placeholder="Enter location..." id="createLocation">
+                    </div>
+                    <div class="form-group">
+                        <b>Description</b>
+                        <textarea class="form-control mb-3" rows="2" placeholder="Enter description..." id="createDescription" style="resize: none"></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <b>Location</b>
-                    <input class="form-control mb-3" placeholder="Enter location..." id="createLocation">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info text-white" onclick="createSensor()">Save</button>
                 </div>
-                <div class="form-group">
-                    <b>Description</b>
-                    <textarea class="form-control mb-3" rows="2" placeholder="Enter description..." id="createDescription" style="resize: none"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info text-white" onclick="createSensor()">Save</button>
             </div>
         </div>
     </div>
-</div>
 
 @*Update*@
-<div class="modal fade" tabindex="-1" id="dialogUpdate">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Update sensor</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <b>Title</b>
-                    <input class="form-control mb-3" placeholder="Enter title..." id="updateTitle">
+    <div class="modal fade" tabindex="-1" id="dialogUpdate">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update sensor</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="form-group">
-                    <b>Model</b>
-                    <input class="form-control mb-3" placeholder="Enter model..." id="updateModel">
-                </div>
-                <div class="form-group">
-                    <b>Range</b>
-                    <div class="row">
-                        <div class="col-6">
-                            <input type="number" class="form-control mb-3" placeholder="From" id="updateRangeFrom">
-                        </div>
-                        <div class="col-6">
-                            <input type="number" class="form-control col-6 mb-3" placeholder="To" id="updateRangeTo">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <b>Title</b>
+                        <input class="form-control mb-3" placeholder="Enter title..." id="updateTitle">
+                    </div>
+                    <div class="form-group">
+                        <b>Model</b>
+                        <input class="form-control mb-3" placeholder="Enter model..." id="updateModel">
+                    </div>
+                    <div class="form-group">
+                        <b>Range</b>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="number" class="form-control mb-3" placeholder="From" id="updateRangeFrom">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control col-6 mb-3" placeholder="To" id="updateRangeTo">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-6">
-                            <b>Type</b>
-                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="updateType">
-                                @foreach (var item in @Model.Types)
-                                {
-                                    <option value="@item.Id">@item.Name</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <b>Unit</b>
-                            <select class="form-control form-select mb-3" placeholder="Choose type..." id="updateUnit">
-                                @foreach (var item in @Model.Units)
-                                {
-                                    <option value="@item.Id">@item.Name</option>
-                                }
-                            </select>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-6">
+                                <b>Type</b>
+                                <select class="form-control form-select mb-3" placeholder="Choose type..." id="updateType">
+                                    @foreach (var item in @Model.Types)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <b>Unit</b>
+                                <select class="form-control form-select mb-3" placeholder="Choose type..." id="updateUnit">
+                                    @foreach (var item in @Model.Units)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <b>Location</b>
+                        <input class="form-control mb-3" placeholder="Enter location..." id="updateLocation">
+                    </div>
+                    <div class="form-group">
+                        <b>Description</b>
+                        <textarea class="form-control mb-3" rows="2" placeholder="Enter description..." id="updateDescription" style="resize: none"></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <b>Location</b>
-                    <input class="form-control mb-3" placeholder="Enter location..." id="updateLocation">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info text-white" onclick="updateSensor()">Save</button>
                 </div>
-                <div class="form-group">
-                    <b>Description</b>
-                    <textarea class="form-control mb-3" rows="2" placeholder="Enter description..." id="updateDescription" style="resize: none"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-info text-white" onclick="updateSensor()">Save</button>
             </div>
         </div>
     </div>
-</div>
-
+}
 <script>
 
     document.addEventListener("DOMContentLoaded", function (event) {
@@ -361,29 +373,37 @@
         let td5 = document.createElement("td")
         let td6 = document.createElement("td");
         let td7 = document.createElement("td");
-        let td8 = document.createElement("td");
+        @if (Context.User.IsInRole("Admin"))
+        {
+            <text>
+            let td8 = document.createElement("td");
 
-        let aDelete = document.createElement("a");
-        aDelete.innerText = "delete";
-        aDelete.href = "#"
-        aDelete.onclick = function (event) {
-            deleteSensor(obj.id);
+
+            let aDelete = document.createElement("a");
+            aDelete.innerText = "delete";
+            aDelete.href = "#"
+            aDelete.onclick = function(event)
+            {
+                deleteSensor(obj.id);
+            }
+
+            aDelete.style.color = "#DC143C";
+
+            let aUpdate = document.createElement("a");
+            aUpdate.innerText = "update";
+            aUpdate.href = "#"
+
+            aUpdate.onclick = function(event)
+            {
+                updateOpen(obj.id);
+            }
+
+            let br = document.createElement("br");
+            td8.appendChild(aUpdate);
+            td8.appendChild(br);
+            td8.appendChild(aDelete);
+            </text>
         }
- 
-        aDelete.style.color = "#DC143C";
-
-        let aUpdate = document.createElement("a");
-        aUpdate.innerText = "update";
-        aUpdate.href = "#"
-        
-        aUpdate.onclick = function (event) {
-            updateOpen(obj.id);
-        }
-
-        let br = document.createElement("br");
-        td8.appendChild(aUpdate);
-        td8.appendChild(br);
-        td8.appendChild(aDelete);
 
         td1.innerText = obj.ind;
         td2.innerText = obj.title;
@@ -400,8 +420,18 @@
         row.appendChild(td5);
         row.appendChild(td6);
         row.appendChild(td7);
-        row.appendChild(td8);
+        
+        @if (Context.User.IsInRole("Admin"))
+        {
+            @:row.appendChild(td8);
+        }
 
         table.appendChild(row)
     }
+    
+    function LogOut() {
+        document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        window.location.reload();
+    }
+    
 </script>

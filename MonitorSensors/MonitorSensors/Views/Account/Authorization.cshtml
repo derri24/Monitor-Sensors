@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Authorization";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-5 col-lg-6 col-md-8 col-sm-11">
+            <div class="card card-body my-5">
+                <h1 class="text-center">AUTHORIZATION</h1>
+
+                <b>Login:</b>
+                <input type="text" class="form-control mb-3" id="login"
+                       placeholder="Login.." min="0" max="100" step="1"/>
+
+                <b>Password:</b>
+                <input type="password" class="form-control mb-3" id="password"
+                       placeholder="Password.." min="0" max="100" step="1"/>
+                <p1 class=" mb-3">Haven't an account? <a class="text-info" href="/Account/Registration">Registration</a></p1>
+                <button type="button" class="btn btn-dark w-100" onclick="authorisation()">Authorisation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateData(login, password) {
+        if (login.length < 4) {
+            return "Login can't be smaller than 4 characters!";
+        }
+        if(password.length < 4) {
+            return "Password can't be smaller than 4 characters!";
+        }
+        return "";
+    }
+
+    async function authorisation() {
+        let data = {
+            login: document.getElementById('login').value,
+            password: document.getElementById('password').value, 
+        }
+        
+        let message = validateData(data.login, data.password);
+        if (message !== ""){
+            alert(message); 
+            return;
+        }
+        
+        const config = {
+            method: 'post',
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
+            body: JSON.stringify(data)
+        }
+           
+        const response = await fetch(`/Account/Authorization?`, config)
+        //let object = await response.json();
+        //console.log(object)
+        //if (object.result === 2)
+           window.location.href = '/';
+            
+    }
+
+
+</script>

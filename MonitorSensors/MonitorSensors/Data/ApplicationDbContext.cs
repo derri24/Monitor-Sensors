@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MonitorSensors.Entities;
 using Type = MonitorSensors.Entities.Type;
 
 namespace MonitorSensors.Data;
 
-public sealed class ApplicationDbContext : DbContext
+public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Sensor> Sensors { get; set; }
     public DbSet<Type> Types { get; set; }
@@ -36,5 +37,7 @@ public sealed class ApplicationDbContext : DbContext
             new Unit { Id = 3, Name = "\u00b0C", },
             new Unit { Id = 4, Name = "%", }
         );
+        
+        base.OnModelCreating(modelBuilder);
     }
 }
