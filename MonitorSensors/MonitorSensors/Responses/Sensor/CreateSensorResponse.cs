@@ -1,4 +1,4 @@
-namespace MonitorSensors.Responses;
+namespace MonitorSensors.Responses.Sensor;
 
 public class CreateSensorResponse
 {

@@ -1,5 +1,5 @@
-using MonitorSensors.Models;
-using MonitorSensors.Responses;
+using MonitorSensors.Models.Sensor;
+using MonitorSensors.Responses.Sensor;
 
 namespace MonitorSensors.Services.Interfaces;
 

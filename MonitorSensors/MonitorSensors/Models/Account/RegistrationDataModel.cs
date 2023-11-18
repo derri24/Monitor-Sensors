@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace MonitorSensors.Models.Account;
 
 public class RegistrationDataModel

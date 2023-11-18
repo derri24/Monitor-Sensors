@@ -1,24 +1,19 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using MonitorSensors.Data;
 using MonitorSensors.Models.Account;
 using MonitorSensors.Responses.Account;
 using MonitorSensors.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using MonitorSensors.Entities;
 
 namespace MonitorSensors.Services;
 
 public class AccountService : IAccountService
 {
-    private readonly UserManager<ApplicationUser> userManager;
-    private readonly RoleManager<IdentityRole> roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
     public AccountService(
@@ -27,15 +22,15 @@ public class AccountService : IAccountService
         IConfiguration configuration)
     {
         _configuration = configuration;
-        this.userManager = userManager;
-        this.roleManager = roleManager;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<RegistrationResponse> Registration(RegistrationDataModel model)
     {
         var response = new RegistrationResponse();
 
-        var userExists = await userManager.FindByNameAsync(model.Name);
+        var userExists = await _userManager.FindByNameAsync(model.Name);
         if (userExists != null)
         {
             response.Result = RegistrationResult.UserAlreadyExists;
@@ -49,18 +44,18 @@ public class AccountService : IAccountService
             UserName = model.Login,
         };
         user.Id = Guid.NewGuid().ToString();
-        var createUserResult = await userManager.CreateAsync(user, model.Password);
+        var createUserResult = await _userManager.CreateAsync(user, model.Password);
         if (!createUserResult.Succeeded)
         {
             response.Result = RegistrationResult.ClientError;
             return response;
         }
 
-        if (!await roleManager.RoleExistsAsync(model.Role))
-            await roleManager.CreateAsync(new IdentityRole(model.Role));
+        if (!await _roleManager.RoleExistsAsync(model.Role))
+            await _roleManager.CreateAsync(new IdentityRole(model.Role));
 
-        if (await roleManager.RoleExistsAsync(model.Role))
-            await userManager.AddToRoleAsync(user, model.Role);
+        if (await _roleManager.RoleExistsAsync(model.Role))
+            await _userManager.AddToRoleAsync(user, model.Role);
 
         response.Result = RegistrationResult.Success;
         return response;
@@ -69,14 +64,14 @@ public class AccountService : IAccountService
     public async Task<AuthenticationResponse> Authentication(AuthenticationDataModel model)
     {
         var response = new AuthenticationResponse();
-        var user = await userManager.FindByNameAsync(model.Login);
-        if (user == null || !await userManager.CheckPasswordAsync(user, model.Password))
+        var user = await _userManager.FindByNameAsync(model.Login);
+        if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
             response.Result = AuthenticationResult.IncorrectLoginOrPassword;
             return response;
         }
 
-        var userRoles = await userManager.GetRolesAsync(user);
+        var userRoles = await _userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),

@@ -1,6 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MonitorSensors.Middlewares;
@@ -16,39 +14,45 @@ public class VerifyTokenMiddleware
 
     public async Task InvokeAsync(HttpContext context, TokenValidationParameters tokenValidationParameters)
     {
-        if (context.Request.Path == "/Account/Authentication" || 
-            context.Request.Path == "/Account/Registration" )
+        if (context.Request.Path == "/Account/Authentication" ||
+            context.Request.Path == "/Account/Registration")
         {
-            await this._next(context);
+            await _next(context);
             return;
         }
-        
-        if (!context.Request.Cookies.ContainsKey("token"))
+
+        if (!context.Request.Cookies.ContainsKey("token") &&
+            !context.Request.Headers.Authorization.Any(x => x.Contains("Bearer ")))
         {
-            context.Response.StatusCode = 401;
             context.Response.Redirect("/Account/Authentication");
             return;
         }
 
+
         try
         {
-            var token = context.Request.Cookies["token"];
+            string? token;
+            if (context.Request.Cookies.ContainsKey("token"))
+            {
+                token = context.Request.Cookies["token"];
+            }
+            else
+            {
+                var bearer = context.Request.Headers.Authorization.FirstOrDefault(x => x.Contains("Bearer "));
+                token = bearer.Replace("Bearer ","");
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var claims = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
             context.User = claims;
-
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            context.Response.StatusCode = 401;
             context.Response.Redirect("/Account/Authentication");
             return;
         }
-     
-        await this._next(context);
+
+        await _next(context);
     }
-
-   
-
 }

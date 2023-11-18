@@ -1,14 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MonitorSensors.Data;
 using MonitorSensors.Entities;
-using MonitorSensors.Models;
-using MonitorSensors.Responses;
+using MonitorSensors.Models.Sensor;
+using MonitorSensors.Responses.Sensor;
 using MonitorSensors.Services.Interfaces;
 
 namespace MonitorSensors.Services;
 
-[Authorize]
 public class SensorService : ISensorService
 {
     private readonly ApplicationDbContext _context;

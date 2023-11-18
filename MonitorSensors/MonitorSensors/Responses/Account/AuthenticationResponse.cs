@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 namespace MonitorSensors.Responses.Account;
 
 public class AuthenticationResponse

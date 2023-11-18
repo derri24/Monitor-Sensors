@@ -1,4 +1,4 @@
-namespace MonitorSensors.Models;
+namespace MonitorSensors.Models.Sensor;
 
 public class UnitModel
 {

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonitorSensors.Models;
+using MonitorSensors.Models.Sensor;
 using MonitorSensors.Responses;
+using MonitorSensors.Responses.Sensor;
 using MonitorSensors.Services.Interfaces;
 
 namespace MonitorSensors.Controllers;

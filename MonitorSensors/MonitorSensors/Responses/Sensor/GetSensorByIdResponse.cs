@@ -1,6 +1,6 @@
-using MonitorSensors.Models;
+using MonitorSensors.Models.Sensor;
 
-namespace MonitorSensors.Responses;
+namespace MonitorSensors.Responses.Sensor;
 
 public class GetSensorByIdResponse
 {
